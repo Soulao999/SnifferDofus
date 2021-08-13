@@ -1,0 +1,2 @@
+.\data\ffdec_14.4.0\ffdec.bat -config "parallelSpeedUp=0" -selectclass "com.ankamagames.dofus.BuildInfos,com.ankamagames.dofus.network.++,com.ankamagames.jerakine.network.++" -export script ./sources .\data\DofusInvoker.swf
+python .\LaBot\scripts\build_protocol.py --sources-path "./sources" --labot-path "./"

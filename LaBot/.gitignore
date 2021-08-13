@@ -1,0 +1,8 @@
+.DS_Store
+*.pyc
+__pycache__
+sources/
+protocol.pk
+junk/
+.mypy_cache
+.vscode

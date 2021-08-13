@@ -1,0 +1,5 @@
+A chaque MAJ (si ça ne fonctionne plus):
+-Remplacer DofusInvoker.swf dans data par le nouveau
+(- Si necessaire regenerer Items.json et i18n_fr.json avec les nouveau fichier du jeu et les unpackers de pydofus)
+-Exécuter les commandes de decompiler.bat (Si clés fonctionne pas faire l'extraction à la main du swf ou fair esur linux)
+(-Potentiellement regénérer la table de conversion des GID en names avec itemDataLoader)
