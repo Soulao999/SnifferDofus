@@ -50,6 +50,7 @@ def on_receive(pa):
     buf += bytes(pa[TCP].payload)#[40:]
     while (msg:=Msg.fromRaw(buf, direction)):
         addMessageToQueue(msg)
+    print(buf)
         
 def unknownMsgIdProcessing(msg:Msg):
     logging.error(f"ID: {msg.id}\nCount: {msg.count}\nData: {msg.data}")

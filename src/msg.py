@@ -39,6 +39,9 @@ class Msg:
         """
         if not buf:
             return
+        if str(buf.hex()) == "00":
+            buf.data.clear()
+            return None
         try:
             header = buf.readUnsignedShort()
             #print(f"Header : {header}\n")
