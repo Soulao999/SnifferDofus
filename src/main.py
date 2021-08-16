@@ -2,11 +2,11 @@ from multiprocessing import Queue
 import threading
 from pprint import pprint
 
+import sounds
 import logging
 
 from scapy.all import *
 import signal
-import protocol
 import msgProcessing
 from binrw import *
 from msg import Msg

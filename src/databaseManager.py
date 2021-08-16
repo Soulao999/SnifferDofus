@@ -7,6 +7,7 @@ ITEMS_TABLE_NAME = "GIDToName"
 ITEMS_TYPES_TABLE_NAME = "TypeToName"
 EFFECTS_TABLE_NAME = "EffectToName"
 OBJETS_ELEVAGE_TABLE_NAME = "ObjetsElevage"
+SKILLS_TABLE_NAME = "SkillToName"
 
 class DatabaseManager():
 
@@ -43,6 +44,16 @@ class DatabaseManager():
         query = f"SELECT * FROM {PRICES_TABLE_NAME} WHERE GID={GID}"
         self.sendQuery(query)
         return self.fetch_all()
+
+    def getSkillNameFromGID(self,GID: int) -> str:
+        query = f"SELECT name FROM {SKILLS_TABLE_NAME} WHERE ID={GID}"
+        self.sendQuery(query)
+        return self.fetch_all()[0][0]
+
+    def getItemTypeFromGID(self,GID: int) -> int:
+        query = f"SELECT typeID FROM {ITEMS_TABLE_NAME} WHERE GID={GID}"
+        self.sendQuery(query)
+        return self.fetch_all()[0][0]
 
 if __name__ == "__main__":
     db = DatabaseManager()

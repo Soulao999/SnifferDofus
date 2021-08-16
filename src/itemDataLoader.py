@@ -6,6 +6,7 @@ ITEMS_JSON_PATH = Path("data/Items.json")
 ITEMS_TYPES_JSON_PATH = Path("data/ItemTypes.json")
 TEXT_JSON_PATH = Path("data/i18n_fr.json")
 EFFECTS_JSON_PATH = Path("data/Effects.json")
+SKILLS_JSON_PATH = Path("data/Skills.json")
 
 if __name__ == "__main__":
     with open(ITEMS_JSON_PATH) as jsonFile:
@@ -18,9 +19,11 @@ if __name__ == "__main__":
     textJson = textJson["texts"]
     #GUIToName = {item[id]:textJson[str(item["nameId"])] for item in itemJson}
     GIDToName = {}
+    TypeId = {}
     for item in itemJson:
         try:
             GIDToName[item["id"]] = textJson[str(item["nameId"])]
+            TypeId[item["id"]] = item['typeId']
         except KeyError as e:
             print(e)
     
@@ -30,10 +33,10 @@ if __name__ == "__main__":
     #         f.write(f"{key} : {value}\n")
 
     dbManager = databaseManager.DatabaseManager()
-    query = f"INSERT INTO {databaseManager.ITEMS_TABLE_NAME} (GID,name) VALUES "
+    query = f"INSERT INTO {databaseManager.ITEMS_TABLE_NAME} (GID,name,typeID) VALUES "
     for key,value in GIDToName.items():
         value = value.replace("'","''")
-        query += f"({key},'{value}'),"
+        query += f"({key},'{value}',{TypeId[key]}),"
     query = query[:len(query)-1]
     query += ';'
     dbManager.sendQuery(query)
