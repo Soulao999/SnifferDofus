@@ -3,6 +3,10 @@ import json
 import xlsxwriter
 import datetime
 
+
+objetsElevageId = 93
+usageActionId = 812
+efficiencyActionId = 1007
 class ObjetElevage():
     def __init__(self,name,GID,price1,price10,price100,efficiency,durability) -> None:
         self.name = name
@@ -50,28 +54,16 @@ def addObjInXlsxSheet(sheet : xlsxwriter.worksheet.Worksheet,row: int,obj: Objet
     sheet.write(row,7,obj.calculateRatio())
 
 if __name__ == "__main__":
-    objetsElevageId = 93
-    usageActionId = 812
-    efficiencyActionId = 1007
+    
     dbManager = databaseManager.DatabaseManager()
-    a = "SELECT GID,max(date) as date FROM Prices group by GID"
-    query = f"SELECT maxPrices.GID,name,objectType,price1,price10,price100,maxPrices.date,effects FROM (SELECT maxDate.GID,objectType,price1,price10,price100,maxDate.date,effects FROM {databaseManager.PRICES_TABLE_NAME},({a}) maxDate WHERE {databaseManager.PRICES_TABLE_NAME}.date=maxDate.date AND {databaseManager.PRICES_TABLE_NAME}.GID=maxDate.GID AND objectType={objetsElevageId}) as maxPrices JOIN  {databaseManager.ITEMS_TABLE_NAME} ON maxPrices.GID={databaseManager.ITEMS_TABLE_NAME}.GID"
-    # La query recupère les données les plus récente de tous les items déjà enregistrés
+    query = "SELECT * FROM ObjetsElevage JOIN(SELECT GID,max(date) as maxdate FROM ObjetsElevage group by GID) as maxTable ON ObjetsElevage.GID = maxTable.GID WHERE date = maxdate"
     dbManager.sendQuery(query)
     result = dbManager.fetch_all()
     dbManager.stop()
     # Création des objets contenant les infos
     Objects = []
     for object in result:
-        effects = object[-1].replace("'",'"')
-        effects = json.loads(effects)
-        for elt in effects:
-            if elt["actionId"] == usageActionId:
-                dur = elt["diceConst"]
-            elif elt["actionId"] == efficiencyActionId:
-                eff = elt["value"]
-        Objects.append(ObjetElevage(object[1],object[0],object[3],object[4],object[5],eff,dur))
-
+        Objects.append(ObjetElevage(object[6],object[0],object[1],object[2],object[3],object[7],object[4]))
 
     # Création de l'excel
     workbook = xlsxwriter.Workbook(f'Elevage_{str(datetime.datetime.now())[:-16]}_{datetime.datetime.now().timestamp()}.xlsx')

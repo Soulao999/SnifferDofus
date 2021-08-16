@@ -6,6 +6,7 @@ PRICES_TABLE_NAME = "Prices"
 ITEMS_TABLE_NAME = "GIDToName"
 ITEMS_TYPES_TABLE_NAME = "TypeToName"
 EFFECTS_TABLE_NAME = "EffectToName"
+OBJETS_ELEVAGE_TABLE_NAME = "ObjetsElevage"
 
 class DatabaseManager():
 

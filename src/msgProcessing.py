@@ -1,7 +1,7 @@
 import threading
 import databaseManager
 import datetime
-
+import objetsElevage
 class MsgProcessingThread(threading.Thread):
     def __init__(self, queue):
         threading.Thread.__init__(self)
@@ -39,10 +39,26 @@ class MsgProcessingThread(threading.Thread):
                     price10 = prices[1]
                     price100 = prices[2]
                     date = datetime.datetime.now()
-                    if self.lastGID != GID:
-                        query = f'INSERT INTO {databaseManager.PRICES_TABLE_NAME} (UID, GID, objectType, price1, price10, price100, effects,date) VALUES ({UID},{GID},{objectType},{price1},{price10},{price100},"{effects}","{date}");'
+                    #Evite plusiseurs fois le même object à la suite mais pose problème quand plusieurs caractéristiques d'objet en dehors du for peut être ce système le self.lastGID=GID
+                    # if self.lastGID != GID:
+                    #     query = f'INSERT INTO {databaseManager.PRICES_TABLE_NAME} (UID, GID, objectType, price1, price10, price100, effects,date) VALUES ({UID},{GID},{objectType},{price1},{price10},{price100},"{effects}","{date}");'
+                    #     self.dbManager.sendQuery(query)
+                    #     self.lastGID = GID
+
+                if objectType == objetsElevage.objetsElevageId:
+                            # Dans le cas d'un object d'élevage on suavegarde en plus dans une table spéciale si celui-ci est au max en durabilité
+                            # TODO dans une fonction séparée
+                    for effect in itemTypeDescription['effects']:
+                        if effect['actionId'] == objetsElevage.usageActionId:
+                            toSave = ((effect['diceNum'] == effect['diceConst']) and (effect['diceSide'] == effect['diceConst']))
+                            dur = effect['diceConst']
+                        elif effect['actionId'] == objetsElevage.efficiencyActionId:
+                            eff = effect['value']
+                    if toSave:
+                        name = self.dbManager.getItemNameFromGID(GID)
+                        query = f'INSERT INTO {databaseManager.OBJETS_ELEVAGE_TABLE_NAME} (name, GID, price1, price10, price100, efficiency,durability,date) VALUES ("{name}",{GID},{price1},{price10},{price100},{eff},{dur},"{date}");'
                         self.dbManager.sendQuery(query)
-                        self.lastGID = GID
+                                        
                 else:
                     break
         else:

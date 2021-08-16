@@ -39,6 +39,7 @@ class Msg:
         """
         if not buf:
             return
+        # Prevent buffer corruption
         if str(buf.hex()) == "00":
             buf.data.clear()
             return None

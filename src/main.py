@@ -50,7 +50,7 @@ def on_receive(pa):
     buf += bytes(pa[TCP].payload)#[40:]
     while (msg:=Msg.fromRaw(buf, direction)):
         addMessageToQueue(msg)
-    print(buf)
+    #print(buf)
         
 def unknownMsgIdProcessing(msg:Msg):
     logging.error(f"ID: {msg.id}\nCount: {msg.count}\nData: {msg.data}")
@@ -68,6 +68,7 @@ def addMessageToQueue(msg: Msg):
         #pprint(msg.json()["__type__"])
     except KeyError as e:
         print(f"Key Error message treatement maybe this key doesn't exits : {e}\nQueue has currently {mainQueue.qsize()} elements")
+        print(f"Key error {buf2}")
         unknownMsgIdProcessing(msg)
     except IndexError as e:
         print(f"Index Error message treatement maybe this key doesn't exits : {e}\nQueue has currently {mainQueue.qsize()} elements")
