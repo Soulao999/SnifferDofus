@@ -52,10 +52,9 @@ def on_receive(pa):
         addMessageToQueue(msg)
     #print(buf)
         
-def unknownMsgIdProcessing(msg:Msg):
-    logging.error(f"ID: {msg.id}\nCount: {msg.count}\nData: {msg.data}")
-
 def addMessageToQueue(msg: Msg):
+    logger.info(f"Message received with ID:{msg.id}")
+    logger.debug(f"Message content ID: {msg.id} Count: {msg.count} Data: {msg.data}")
     if msg.id == 0:
         return
     # if msg.id != 6000:
@@ -63,34 +62,36 @@ def addMessageToQueue(msg: Msg):
     try:
         msgJson = msg.json()
         mainQueue.put(msgJson)
-        # print(msg.json())
-        # print(msg.id)
-        #pprint(msg.json()["__type__"])
     except KeyError as e:
-        print(f"Key Error message treatement maybe this key doesn't exits : {e}\nQueue has currently {mainQueue.qsize()} elements")
-        print(f"Key error {buf2}")
-        unknownMsgIdProcessing(msg)
+        logger.error(f"Key Error message treatement maybe this key doesn't exits : {e}\nQueue has currently {mainQueue.qsize()} elements\n The buffer contains the following : {buf2}")
+        logger.error(f"ID: {msg.id}\nCount: {msg.count}\nData: {msg.data}")
     except IndexError as e:
-        print(f"Index Error message treatement maybe this key doesn't exits : {e}\nQueue has currently {mainQueue.qsize()} elements")
-        print(msg.id)
-    #print(msg.data)
-    #print(Msg.from_json(msg.json()).data)
+        logger.error(f"Index Error message treatement maybe this key doesn't exits : {e}\nQueue has currently {mainQueue.qsize()} elements\n MsgID : {msg.id}")
 
 def stop(*args):
-    print("stop")
     stopSignal.set()
+    logger.info("Stop signal form user received")
+
+def init_logger() -> None:
+    logging.basicConfig(filename='debug.log', encoding='utf-8', level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(name)s:%(message)s')
+    logging.info("Logger has been initialized")
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.ERROR, filename='SnifferDofus.log', format='%(asctime)s %(levelname)s:%(message)s')
+    init_logger()
+    logger = logging.getLogger("main")
     stopSignal = threading.Event()
     signal.signal(signal.SIGINT, stop)
     signal.signal(signal.SIGTERM, stop)
     mainQueue = Queue(10000)
+    logger.info("Initializing msgProcessing Thread")
     msgProcessingWorker = msgProcessing.MsgProcessingThread(mainQueue)
     msgProcessingWorker.setDaemon(True)
     msgProcessingWorker.start()
+    logger.info("msgProcessing Thread has started")
+    logger.info("Start sniffing")
     capture = sniff(prn=on_receive,filter="tcp port 5555",stop_filter=lambda p: stopSignal.is_set())
-    print(mainQueue.qsize())
+    logger.info("Stop sniffing")
+    logger.info("Stopping msgProcessing")
     msgProcessingWorker.stop()
-    print("Stop capturing")
-    print("Stopping program")
+    logger.debug(f"Queuesize before program stops: {mainQueue.qsize()}")
+    logger.info("End of program")

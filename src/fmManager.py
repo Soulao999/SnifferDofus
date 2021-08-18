@@ -1,6 +1,7 @@
 
 import databaseManager
 import item
+import logging
 
 #TODO Il en manque ?
 fmSkillIdList = [118, 166, 168, 113, 351, 164]
@@ -9,6 +10,8 @@ itemTypeRune = 78
 class FmManager():
 
     def __init__(self) -> None:
+        logger = logging.getLogger("FmManager")
+        logger.info("Initializing FM Manager")
         self.items = {}
         self.runesUsedForEachUID={} # Un dict UID -> de dict GID -> nbrUsed
         self.currentRuneGID = 0

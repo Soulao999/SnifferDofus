@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+import logging
 
 DB_NAME = Path("data/prices.db")
 PRICES_TABLE_NAME = "Prices"
@@ -8,14 +9,17 @@ ITEMS_TYPES_TABLE_NAME = "TypeToName"
 EFFECTS_TABLE_NAME = "EffectToName"
 OBJETS_ELEVAGE_TABLE_NAME = "ObjetsElevage"
 SKILLS_TABLE_NAME = "SkillToName"
+SOLD_ITEMS_TABLE_NAME = "SoldItems"
 
 class DatabaseManager():
 
     def __init__(self):
+        self.logger = logging.getLogger("databaseManager")
         self.con = sqlite3.connect(DB_NAME)
         self.cur = self.con.cursor()
 
     def sendQuery(self,query: str):
+        self.logger.debug(f"Query: {query}")
         self.cur.execute(query)
         self.con.commit()
 
