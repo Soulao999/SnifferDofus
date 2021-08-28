@@ -6,3 +6,4 @@ class Item():
         self.name = name
         # Dico avec clé l'actionId et valeur la value
         self.effects = effects
+        self.puit = 0

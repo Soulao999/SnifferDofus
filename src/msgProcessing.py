@@ -98,6 +98,12 @@ class MsgProcessingThread(threading.Thread):
                 date = datetime.datetime.fromtimestamp(item['date'])
                 query = f'INSERT INTO {databaseManager.SOLD_ITEMS_TABLE_NAME} (GID,Price,Quantity,date) VALUES ({GID},{price},{qty},"{date}");'
                 self.dbManager.sendQuery(query)
+        elif element['__type__'] == 'ExchangeBidPriceForSellerMessage':
+            GID = element['genericId']
+            avgPrice = element['averagePrice']
+            date = datetime.datetime.now()
+            query = f'INSERT INTO {databaseManager.AVERAGE_PRICES_TABLE_NAME} (GID,price,date) VALUES ({GID},{avgPrice},"{date}");'
+            self.dbManager.sendQuery(query)
         elif element['__type__'] == 'ObjectAveragePricesMessage':
             self.logger.info("ObjectAveragePrices")
         elif element['__type__'] == 'ObjectAveragePricesErrorMessage':

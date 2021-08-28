@@ -77,12 +77,13 @@ def init_logger() -> None:
     logging.info("Logger has been initialized")
 
 if __name__ == "__main__":
+    print("Start")
     init_logger()
     logger = logging.getLogger("main")
     stopSignal = threading.Event()
     signal.signal(signal.SIGINT, stop)
     signal.signal(signal.SIGTERM, stop)
-    mainQueue = Queue(10000)
+    mainQueue = Queue(1000)
     logger.info("Initializing msgProcessing Thread")
     msgProcessingWorker = msgProcessing.MsgProcessingThread(mainQueue)
     msgProcessingWorker.setDaemon(True)
@@ -95,3 +96,4 @@ if __name__ == "__main__":
     msgProcessingWorker.stop()
     logger.debug(f"Queuesize before program stops: {mainQueue.qsize()}")
     logger.info("End of program")
+    print("Stop")

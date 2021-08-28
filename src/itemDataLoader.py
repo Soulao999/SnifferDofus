@@ -9,7 +9,7 @@ EFFECTS_JSON_PATH = Path("data/Effects.json")
 SKILLS_JSON_PATH = Path("data/Skills.json")
 
 if __name__ == "__main__":
-    with open(ITEMS_JSON_PATH) as jsonFile:
+    with open(EFFECTS_JSON_PATH) as jsonFile:
         itemJson = json.load(jsonFile)
         jsonFile.close()
 
@@ -17,13 +17,13 @@ if __name__ == "__main__":
         textJson = json.load(jsonFile)
         jsonFile.close()
     textJson = textJson["texts"]
-    #GUIToName = {item[id]:textJson[str(item["nameId"])] for item in itemJson}
+
     GIDToName = {}
-    TypeId = {}
+    Poids = {}
     for item in itemJson:
         try:
-            GIDToName[item["id"]] = textJson[str(item["nameId"])]
-            TypeId[item["id"]] = item['typeId']
+            GIDToName[item["id"]] = textJson[str(item["descriptionId"])]
+            Poids[item["id"]] = item["effectPowerRate"]
         except KeyError as e:
             print(e)
     
@@ -33,10 +33,10 @@ if __name__ == "__main__":
     #         f.write(f"{key} : {value}\n")
 
     dbManager = databaseManager.DatabaseManager()
-    query = f"INSERT INTO {databaseManager.ITEMS_TABLE_NAME} (GID,name,typeID) VALUES "
+    query = f"INSERT INTO {databaseManager.EFFECTS_TABLE_NAME} (ID,name,poids) VALUES "
     for key,value in GIDToName.items():
         value = value.replace("'","''")
-        query += f"({key},'{value}',{TypeId[key]}),"
+        query += f"({key},'{value}',{Poids[key]}),"
     query = query[:len(query)-1]
     query += ';'
     dbManager.sendQuery(query)
