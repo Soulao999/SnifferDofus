@@ -1,6 +1,7 @@
 from multiprocessing import Queue
 import threading
 from pprint import pprint
+from commandManager import CommandManagerThread
 
 import sounds
 import logging
@@ -86,14 +87,18 @@ if __name__ == "__main__":
     mainQueue = Queue(1000)
     logger.info("Initializing msgProcessing Thread")
     msgProcessingWorker = msgProcessing.MsgProcessingThread(mainQueue)
+    commandProcessingWorker = CommandManagerThread()
     msgProcessingWorker.setDaemon(True)
+    commandProcessingWorker.setDaemon(True)
     msgProcessingWorker.start()
+    commandProcessingWorker.start()
     logger.info("msgProcessing Thread has started")
     logger.info("Start sniffing")
     capture = sniff(prn=on_receive,filter="tcp port 5555",stop_filter=lambda p: stopSignal.is_set())
     logger.info("Stop sniffing")
     logger.info("Stopping msgProcessing")
     msgProcessingWorker.stop()
+    commandProcessingWorker.stop()
     logger.debug(f"Queuesize before program stops: {mainQueue.qsize()}")
     logger.info("End of program")
     print("Stop")

@@ -1,4 +1,5 @@
 import threading
+from achatManager import AchatManager
 import databaseManager
 import datetime
 import objetsElevage
@@ -79,7 +80,7 @@ class MsgProcessingThread(threading.Thread):
             self.FmManager.onFMEvent(element)
         elif element['__type__'] == 'ExchangeObjectAddedMessage':
             self.FmManager.onExchangeObjectAddedEvent(element)
-        elif element['__type__'] == 'TextInformationMessagee':
+        elif element['__type__'] == 'TextInformationMessage':
             #TODO Change 65 to Variable
             if element['msgId'] == 65:
                 sounds.ding()
@@ -89,6 +90,9 @@ class MsgProcessingThread(threading.Thread):
                     self.logger.warning(f"ERREUR LES PARAMS 1 ET 2 SONT DIFFERENTS\n_________________________________________\n____________________________________\n{element}\n_____________________________________________\n_______________________________________\n")
                 query = f'INSERT INTO {databaseManager.SOLD_ITEMS_TABLE_NAME} (GID,Price,Quantity,date) VALUES ({params[1]},{params[0]},{params[3]},"{date}");'
                 self.dbManager.sendQuery(query)
+            #TODO change 252 to variable
+            elif element['msgId'] == 252:
+                AchatManager.onMessageEvent(element)
         elif element['__type__'] == 'ExchangeOfflineSoldItemsMessage':
             self.logger.debug("ExchangeOfflineSoldItemsMessage")
             for item in element['bidHouseItems']:
